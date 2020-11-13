@@ -3,6 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include <quantum_interface.cpp>
+
 #include <rpc/blockchain.h>
 
 #include <amount.h>
@@ -2460,6 +2462,45 @@ static RPCHelpMan dumptxoutset()
     };
 }
 
+
+static RPCHelpMan quantumtest()
+{
+    return RPCHelpMan{"quantumtest",
+                "\nTest the post-quantum signature algorithms.\n",
+                {},
+
+                RPCResult{
+                    RPCResult::Type::OBJ, "", "",
+                        {
+                            {RPCResult::Type::NUM, "coins_written", "the number of coins written in the snapshot"},
+                            {RPCResult::Type::STR_HEX, "base_hash", "the hash of the base of the snapshot"},
+                            {RPCResult::Type::NUM, "base_height", "the height of the base of the snapshot"},
+                            {RPCResult::Type::STR, "path", "the absolute path that the snapshot was written to"},
+                        }
+                },
+                RPCExamples{
+                    HelpExampleCli("quantumtest", "")
+            + HelpExampleRpc("quantumtest", "")
+                },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    std::string algorithm = "DILITHIUM_2";
+    //QuantumSigMan sigman(algorithm);
+    //sigman.generate_keypair();
+    
+    UniValue result(UniValue::VOBJ);
+    result.pushKV("Algorithm", algorithm);
+    //result.pushKV("Public key", sigman.get_public_key());
+    //result.pushKV("Private key", sigman.get_private_key());
+
+    //unsigned char* signature = sigman.sign("Hello World");
+    //result.pushKV("Sign \"Hello World\" signature", signature);
+    //result.pushKV("Verify \"Hello World\"", sigman.verify("Hello World", signature) ? "SUCCESS" : "FAILED");
+    return result;
+},
+    };
+}
+
 void RegisterBlockchainRPCCommands(CRPCTable &t)
 {
 // clang-format off
@@ -2499,6 +2540,8 @@ static const CRPCCommand commands[] =
     { "hidden",             "waitforblockheight",     &waitforblockheight,     {"height","timeout"} },
     { "hidden",             "syncwithvalidationinterfacequeue", &syncwithvalidationinterfacequeue, {} },
     { "hidden",             "dumptxoutset",           &dumptxoutset,           {"path"} },
+
+    { "quantum",            "quantumtest",            &quantumtest,            {} },
 };
 // clang-format on
     for (const auto& c : commands) {

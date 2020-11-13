@@ -17,7 +17,7 @@ elif os.path.exists('/media/sim/BITCOIN/blocks'):
 	datadir = ' -datadir=/media/sim/BITCOIN'
 
 def bitcoin(cmd):
-	return os.popen(f'src/bitcoin-cli{datadir} {cmd}').read()
+	return os.popen(f'src/bitcoin-cli{datadir} -regtest {cmd}').read()
 
 
 def console(width):
