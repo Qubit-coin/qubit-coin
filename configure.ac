@@ -694,6 +694,11 @@ case $host in
      ;;
 esac
 
+
+echo "Linking open quantum safe..."
+OQS_LIBS="-L$(srcdir)/liboqs/build/lib -loqs"
+AC_SUBST(OQS_LIBS)
+
 if test x$use_extended_functional_tests != xno; then
   AC_SUBST(EXTENDED_FUNCTIONAL_TESTS, --extended)
 fi
