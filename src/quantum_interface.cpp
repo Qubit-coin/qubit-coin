@@ -1,6 +1,5 @@
-#include <oqs/oqs.h> // Try to integrate into header file?
 #include <string>
-//#include <quantum_interface.h>
+#include <oqs/oqs.h>
 
 /*
 	algorithm: What algorithm the instance of the class is using
@@ -48,8 +47,8 @@ public:
 	// Generate a public and private key pair
 	void generate_keypair() {
 		OQS_STATUS status = OQS_SIG_keypair(sig, public_key, private_key);
+		if(status != OQS_SUCCESS) return; //throw std::runtime_error("ERROR: OQS_SIG_keypair failed\n");
 		return;
-		//if(status != OQS_SUCCESS) throw std::runtime_error("ERROR: OQS_SIG_keypair failed\n");
 	}
 
 	// Get the generated public key
