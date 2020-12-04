@@ -115,13 +115,19 @@ AC_ARG_ENABLE([wallet],
   [AS_HELP_STRING([--disable-wallet],
   [disable wallet (enabled by default)])],
   [enable_wallet=$enableval],
-  [enable_wallet=yes])
+  [enable_wallet=auto])
 
 AC_ARG_WITH([sqlite],
   [AS_HELP_STRING([--with-sqlite=yes|no|auto],
   [enable sqlite wallet support (default: auto, i.e., enabled if wallet is enabled and sqlite is found)])],
   [use_sqlite=$withval],
   [use_sqlite=auto])
+
+AC_ARG_WITH([bdb],
+  [AS_HELP_STRING([--without-bdb],
+  [disable bdb wallet support (default is enabled if wallet is enabled)])],
+  [use_bdb=$withval],
+  [use_bdb=auto])
 
 AC_ARG_WITH([miniupnpc],
   [AS_HELP_STRING([--with-miniupnpc],
@@ -342,6 +348,7 @@ if test "x$enable_debug" = xyes; then
 
   AX_CHECK_PREPROC_FLAG([-DDEBUG],[[DEBUG_CPPFLAGS="$DEBUG_CPPFLAGS -DDEBUG"]],,[[$CXXFLAG_WERROR]])
   AX_CHECK_PREPROC_FLAG([-DDEBUG_LOCKORDER],[[DEBUG_CPPFLAGS="$DEBUG_CPPFLAGS -DDEBUG_LOCKORDER"]],,[[$CXXFLAG_WERROR]])
+  AX_CHECK_PREPROC_FLAG([-DABORT_ON_FAILED_ASSUME],[[DEBUG_CPPFLAGS="$DEBUG_CPPFLAGS -DABORT_ON_FAILED_ASSUME"]],,[[$CXXFLAG_WERROR]])
   AX_CHECK_COMPILE_FLAG([-ftrapv],[DEBUG_CXXFLAGS="$DEBUG_CXXFLAGS -ftrapv"],,[[$CXXFLAG_WERROR]])
 fi
 
@@ -635,9 +642,9 @@ case $host in
          dnl It's safe to add these paths even if the functionality is disabled by
          dnl the user (--without-wallet or --without-gui for example).
 
-         bdb_prefix=$($BREW --prefix berkeley-db4 2>/dev/null)
          qt5_prefix=$($BREW --prefix qt5 2>/dev/null)
-         if test x$bdb_prefix != x && test "x$BDB_CFLAGS" = "x" && test "x$BDB_LIBS" = "x"; then
+         if $BREW list --versions berkeley-db4 >/dev/null && test "x$BDB_CFLAGS" = "x" && test "x$BDB_LIBS" = "x" && test "$use_bdb" != "no"; then
+           bdb_prefix=$($BREW --prefix berkeley-db4 2>/dev/null)
            dnl This must precede the call to BITCOIN_FIND_BDB48 below.
            BDB_CFLAGS="-I$bdb_prefix/include"
            BDB_LIBS="-L$bdb_prefix/lib -ldb_cxx-4.8"
@@ -1188,6 +1195,8 @@ if test "x$enable_fuzz" = "xyes"; then
   use_upnp=no
   use_zmq=no
 
+  AX_CHECK_PREPROC_FLAG([-DABORT_ON_FAILED_ASSUME],[[DEBUG_CPPFLAGS="$DEBUG_CPPFLAGS -DABORT_ON_FAILED_ASSUME"]],,[[$CXXFLAG_WERROR]])
+
   AC_MSG_CHECKING([whether main function is needed])
   AX_CHECK_LINK_FLAG(
     [[-fsanitize=$use_sanitizers]],
@@ -1242,6 +1251,14 @@ if test x$enable_wallet != xno; then
       fi
     fi
     AC_MSG_RESULT([$use_sqlite])
+
+    dnl Disable wallet if both --without-bdb and --without-sqlite
+    if test "x$use_bdb$use_sqlite" = "xnono"; then
+        if test "x$enable_wallet" = "xyes"; then
+            AC_MSG_ERROR([wallet functionality requested but no BDB or SQLite support available.])
+        fi
+        enable_wallet=no
+    fi
 fi
 
 dnl Check for libminiupnpc (optional)
@@ -1497,6 +1514,7 @@ AC_MSG_CHECKING([if wallet should be enabled])
 if test x$enable_wallet != xno; then
   AC_MSG_RESULT(yes)
   AC_DEFINE_UNQUOTED([ENABLE_WALLET],[1],[Define to 1 to enable wallet functions])
+  enable_wallet=yes
 
 else
   AC_MSG_RESULT(no)
@@ -1596,6 +1614,7 @@ AM_CONDITIONAL([TARGET_LINUX], [test x$TARGET_OS = xlinux])
 AM_CONDITIONAL([TARGET_WINDOWS], [test x$TARGET_OS = xwindows])
 AM_CONDITIONAL([ENABLE_WALLET],[test x$enable_wallet = xyes])
 AM_CONDITIONAL([USE_SQLITE], [test "x$use_sqlite" = "xyes"])
+AM_CONDITIONAL([USE_BDB], [test "x$use_bdb" = "xyes"])
 AM_CONDITIONAL([ENABLE_TESTS],[test x$BUILD_TEST = xyes])
 AM_CONDITIONAL([ENABLE_FUZZ],[test x$enable_fuzz = xyes])
 AM_CONDITIONAL([ENABLE_QT],[test x$bitcoin_enable_qt = xyes])
@@ -1660,6 +1679,7 @@ AC_SUBST(SHANI_CXXFLAGS)
 AC_SUBST(ARM_CRC_CXXFLAGS)
 AC_SUBST(LIBTOOL_APP_LDFLAGS)
 AC_SUBST(USE_SQLITE)
+AC_SUBST(USE_BDB)
 AC_SUBST(USE_UPNP)
 AC_SUBST(USE_QRCODE)
 AC_SUBST(BOOST_LIBS)
@@ -1737,6 +1757,7 @@ echo "  multiprocess  = $build_multiprocess"
 echo "  with wallet   = $enable_wallet"
 if test "x$enable_wallet" != "xno"; then
     echo "    with sqlite = $use_sqlite"
+    echo "    with bdb    = $use_bdb"
 fi
 echo "  with gui / qt = $bitcoin_enable_qt"
 if test x$bitcoin_enable_qt != xno; then
