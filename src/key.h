@@ -15,6 +15,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include <quantuminterface.h>
 
 /**
  * secure_allocator is defined in allocators.h
@@ -53,6 +54,9 @@ private:
 
     //! Check whether the 32-byte array pointed to by vch is valid keydata.
     bool static Check(const unsigned char* vch);
+
+    // Quantum signature manager
+    // QuantumSigMan sigman;
 
 public:
     //! Construct an invalid private key.

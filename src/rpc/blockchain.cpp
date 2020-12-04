@@ -3,7 +3,6 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <quantum_interface.cpp>
 
 #include <rpc/blockchain.h>
 
@@ -46,6 +45,8 @@
 #include <condition_variable>
 #include <memory>
 #include <mutex>
+
+#include <quantuminterface.h>
 
 struct CUpdatedBlock
 {
@@ -2484,12 +2485,11 @@ static RPCHelpMan quantumtest()
                 },
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
-    std::string algorithm = "DILITHIUM_2";
-    QuantumSigMan sigman(algorithm);
+    QuantumSigMan sigman;
     sigman.generate_keypair();
     
     UniValue result(UniValue::VOBJ);
-    result.pushKV("Algorithm", algorithm);
+    result.pushKV("Algorithm", sigman.algorithm);
     result.pushKV("Public key", sigman.get_public_key());
     result.pushKV("Private key", sigman.get_private_key());
 

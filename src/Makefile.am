@@ -181,7 +181,7 @@ BITCOIN_CORE_H = \
   pow.h \
   protocol.h \
   psbt.h \
-  quantum_interface.h \
+  quantuminterface.h \
   random.h \
   randomenv.h \
   reverse_iterator.h \
@@ -464,6 +464,8 @@ libbitcoin_consensus_a_SOURCES = \
   primitives/transaction.h \
   pubkey.cpp \
   pubkey.h \
+  quantuminterface.cpp \
+  quantuminterface.h \
   script/bitcoinconsensus.cpp \
   script/interpreter.cpp \
   script/interpreter.h \

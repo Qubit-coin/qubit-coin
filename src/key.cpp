@@ -12,6 +12,8 @@
 #include <secp256k1.h>
 #include <secp256k1_recovery.h>
 
+#include <quantuminterface.h>
+
 static secp256k1_context* secp256k1_context_sign = nullptr;
 
 /** These functions are taken from the libsecp256k1 distribution and are very ugly. */
@@ -155,6 +157,8 @@ bool CKey::Check(const unsigned char *vch) {
 }
 
 void CKey::MakeNewKey(bool fCompressedIn) {
+    //sigman.generate_keypair();
+
     do {
         GetStrongRandBytes(keydata.data(), keydata.size());
     } while (!Check(keydata.data()));
@@ -170,6 +174,8 @@ bool CKey::Negate()
 
 CPrivKey CKey::GetPrivKey() const {
     assert(fValid);
+    //std::string privkey = sigman.get_private_key();
+
     CPrivKey seckey;
     int ret;
     size_t seckeylen;
@@ -183,6 +189,8 @@ CPrivKey CKey::GetPrivKey() const {
 
 CPubKey CKey::GetPubKey() const {
     assert(fValid);
+    //std::string pubkey = sigman.get_public_key();
+    
     secp256k1_pubkey pubkey;
     size_t clen = CPubKey::SIZE;
     CPubKey result;
