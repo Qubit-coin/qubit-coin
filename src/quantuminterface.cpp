@@ -29,16 +29,13 @@ QuantumSigMan::QuantumSigMan(std::string _algorithm) {
 	public_key = (unsigned char*) malloc(public_key_length);
 	private_key = (unsigned char*) malloc(private_key_length);
 
-	LogPrint(BCLog::QUANTUM, "!!!!!!!!!!!!!!!!!!!!!!!!!!! Quantum signature manager has been generated.\n");
+	LogPrint(BCLog::QUANTUM, "Quantum sigman generated for %s.\n", algorithm);
 }
 
 // Generate a public and private key pair
 void QuantumSigMan::generate_keypair() {
 	OQS_STATUS status = OQS_SIG_keypair(sig, public_key, private_key);
-	LogPrint(BCLog::QUANTUM, "!!!!!!!!!!!!!!!!!!!!!!!!!!! Quantum key pair has been generated.\n");
-	LogPrint(BCLog::QUANTUM, "!!!!!!!!!!!!!!!!!!!!!!!!!!! Public key: %s\n", get_public_key());
-	LogPrint(BCLog::QUANTUM, "!!!!!!!!!!!!!!!!!!!!!!!!!!! Private key: %s\n", get_private_key());
-	LogPrint(BCLog::QUANTUM, "!!!!!!!!!!!!!!!!!!!!!!!!!!! Algorithm: %s\n", algorithm);
+	LogPrint(BCLog::QUANTUM, "$s key pair has been generated.\n", algorithm);
 	if(status != OQS_SUCCESS) return; //throw std::runtime_error("ERROR: OQS_SIG_keypair failed\n");
 	return;
 }
@@ -62,7 +59,7 @@ unsigned char* QuantumSigMan::sign(std::string message) {
 
 	OQS_STATUS status = OQS_SIG_sign(sig, signature, signature_len, message_bytes, message_length, private_key);
 
-	LogPrint(BCLog::QUANTUM, "!!!!!!!!!!!!!!!!!!!!!!!!!!! Quantum message \"%s\" was signed.\n", message);
+	LogPrint(BCLog::QUANTUM, "%s message \"%s\" was signed.\n", algorithm, message);
 
 	if (status != OQS_SUCCESS) return 0; //throw std::runtime_error("ERROR: OQS_SIG_sign failed\n");
 
@@ -77,8 +74,8 @@ bool QuantumSigMan::verify(std::string message, unsigned char* signature) {
 
 	OQS_STATUS status = OQS_SIG_verify(sig, message_bytes, message_length, signature, signature_length, public_key);
 
-	LogPrint(BCLog::QUANTUM, "!!!!!!!!!!!!!!!!!!!!!!!!!!! Quantum message \"%s\" was verified.\n", message);
-	LogPrint(BCLog::QUANTUM, "!!!!!!!!!!!!!!!!!!!!!!!!!!! Quantum message is %s.\n", (status == OQS_SUCCESS ? "VALID" : "INVALID"));
+	LogPrint(BCLog::QUANTUM, "%s message \"%s\" was verified.\n", algorithm, message);
+	LogPrint(BCLog::QUANTUM, "%s message is %s.\n", algorithm, (status == OQS_SUCCESS ? "VALID" : "INVALID"));
 
 	return status == OQS_SUCCESS;
 }

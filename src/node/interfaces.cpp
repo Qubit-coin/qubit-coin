@@ -12,6 +12,7 @@
 #include <interfaces/handler.h>
 #include <interfaces/node.h>
 #include <interfaces/wallet.h>
+#include <mapport.h>
 #include <net.h>
 #include <net_processing.h>
 #include <netaddress.h>
@@ -93,15 +94,7 @@ public:
         }
     }
     bool shutdownRequested() override { return ShutdownRequested(); }
-    void mapPort(bool use_upnp) override
-    {
-        if (use_upnp) {
-            StartMapPort();
-        } else {
-            InterruptMapPort();
-            StopMapPort();
-        }
-    }
+    void mapPort(bool use_upnp, bool use_natpmp) override { StartMapPort(use_upnp, use_natpmp); }
     bool getProxy(Network net, proxyType& proxy_info) override { return GetProxy(net, proxy_info); }
     size_t getNodeCount(CConnman::NumConnections flags) override
     {
@@ -121,11 +114,13 @@ public:
             }
 
             // Try to retrieve the CNodeStateStats for each node.
-            TRY_LOCK(::cs_main, lockMain);
-            if (lockMain) {
-                for (auto& node_stats : stats) {
-                    std::get<1>(node_stats) =
-                        GetNodeStateStats(std::get<0>(node_stats).nodeid, std::get<2>(node_stats));
+            if (m_context->peerman) {
+                TRY_LOCK(::cs_main, lockMain);
+                if (lockMain) {
+                    for (auto& node_stats : stats) {
+                        std::get<1>(node_stats) =
+                            m_context->peerman->GetNodeStateStats(std::get<0>(node_stats).nodeid, std::get<2>(node_stats));
+                    }
                 }
             }
             return true;
