@@ -25,6 +25,10 @@ BITCOIN_CLI_NAME=bitcoin-cli
 BITCOIN_TX_NAME=bitcoin-tx
 BITCOIN_WALLET_TOOL_NAME=bitcoin-wallet
 
+echo "Linking open quantum safe..."
+OQS_LIBS="-L$(srcdir)/liboqs/build/lib -loqs"
+AC_SUBST(OQS_LIBS)
+
 dnl Unless the user specified ARFLAGS, force it to be cr
 AC_ARG_VAR(ARFLAGS, [Flags for the archiver, defaults to <cr> if not set])
 if test "x${ARFLAGS+set}" != "xset"; then
@@ -689,11 +693,6 @@ case $host in
      TARGET_OS=linux
      ;;
 esac
-
-
-echo "Linking open quantum safe..."
-OQS_LIBS="-L$(srcdir)/liboqs/build/lib -loqs"
-AC_SUBST(OQS_LIBS)
 
 if test x$use_extended_functional_tests != xno; then
   AC_SUBST(EXTENDED_FUNCTIONAL_TESTS, --extended)
@@ -1724,6 +1723,8 @@ LDFLAGS="$LDFLAGS_TEMP"
 LIBS_TEMP="$LIBS"
 unset LIBS
 LIBS="$LIBS_TEMP"
+
+LIBS="$LIBS $OQS_LIBS"
 
 PKGCONFIG_PATH_TEMP="$PKG_CONFIG_PATH"
 unset PKG_CONFIG_PATH

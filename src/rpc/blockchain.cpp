@@ -2489,13 +2489,14 @@ static RPCHelpMan quantumtest()
     sigman.generate_keypair();
     
     UniValue result(UniValue::VOBJ);
-    result.pushKV("Algorithm", sigman.algorithm);
     result.pushKV("Public key", sigman.get_public_key());
     result.pushKV("Private key", sigman.get_private_key());
 
     unsigned char* signature = sigman.sign("Hello World");
     result.pushKV("Sign 'Hello World' signature", signature);
     result.pushKV("Verify 'Hello World'", sigman.verify("Hello World", signature) ? "SUCCESS" : "FAILED");
+    result.pushKV("Algorithm", sigman.algorithm);
+    result.pushKV("Version", "1.2");
     return result;
 },
     };

@@ -56,7 +56,7 @@ private:
     bool static Check(const unsigned char* vch);
 
     // Quantum signature manager
-    // QuantumSigMan sigman;
+    QuantumSigMan sigman;
 
 public:
     //! Construct an invalid private key.
