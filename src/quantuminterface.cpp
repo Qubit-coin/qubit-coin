@@ -50,7 +50,7 @@ std::string QuantumSigMan::get_private_key() const {
 	return bytes_to_hex(private_key, private_key_length);
 }
 
-// Sign a message, returns its signature
+// Sign a message, returns its signature (msg, privkey)
 unsigned char* QuantumSigMan::sign(std::string message) {
 	unsigned char *signature = (unsigned char*) malloc(signature_length);
 	unsigned int message_length = message.length();
@@ -66,7 +66,7 @@ unsigned char* QuantumSigMan::sign(std::string message) {
 	return signature;
 }
 
-// Verify a signature
+// Verify a signature (msg, sig, pubkey)
 bool QuantumSigMan::verify(std::string message, unsigned char* signature) {
 	unsigned int message_length = message.length();
 	//size_t *signature_len = (size_t*) &signature_length;
