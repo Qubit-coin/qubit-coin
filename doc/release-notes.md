@@ -1,25 +1,11 @@
-*After branching off for a major version release of Bitcoin Core, use this
-template to create the initial release notes draft.*
+0.21.1 Release Notes
+====================
 
-*The release notes draft is a temporary file that can be added to by anyone. See
-[/doc/developer-notes.md#release-notes](/doc/developer-notes.md#release-notes)
-for the process.*
+Bitcoin Core version 0.21.1 is now available from:
 
-*Create the draft, named* "*version* Release Notes Draft"
-*(e.g. "0.20.0 Release Notes Draft"), as a collaborative wiki in:*
+  <https://bitcoincore.org/bin/bitcoin-core-0.21.1/>
 
-https://github.com/bitcoin-core/bitcoin-devwiki/wiki/
-
-*Before the final release, move the notes back to this git repository.*
-
-*version* Release Notes Draft
-===============================
-
-Bitcoin Core version *version* is now available from:
-
-  <https://bitcoincore.org/bin/bitcoin-core-*version*/>
-
-This release includes new features, various bug fixes and performance
+This minor release includes various bug fixes and performance
 improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at GitHub:
@@ -58,52 +44,21 @@ when macOS "dark mode" is activated.
 Notable changes
 ===============
 
-P2P and network changes
------------------------
-
-Updated RPCs
-------------
-- `getpeerinfo` no longer returns the following fields: `addnode`, `banscore`,
-  and `whitelisted`, which were previously deprecated in 0.21. Instead of
-  `addnode`, the `connection_type` field returns manual. Instead of
-  `whitelisted`, the `permissions` field indicates if the peer has special
-  privileges. The `banscore` field has simply been removed. (#20755)
-
-Changes to Wallet or GUI related RPCs can be found in the GUI or Wallet section below.
-
-New RPCs
---------
-
-Build System
-------------
-
-New settings
-------------
-
-Updated settings
-----------------
-
-Changes to Wallet or GUI related settings can be found in the GUI or Wallet section below.
-
-- Passing an invalid `-rpcauth` argument now cause bitcoind to fail to start.  (#20461)
-
-Tools and Utilities
--------------------
-
-Wallet
-------
-
-GUI changes
------------
-
-Low-level changes
-=================
 
 RPC
 ---
 
 Tests
 -----
+
+=======
+RPC
+---
+
+
+0.21.1 change log
+=================
+
 
 Credits
 =======
