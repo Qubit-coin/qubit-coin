@@ -103,7 +103,7 @@ template<typename Stream>
 void DeserializeHDKeypaths(Stream& s, const std::vector<unsigned char>& key, std::map<CPubKey, KeyOriginInfo>& hd_keypaths)
 {
     // Make sure that the key is the size of pubkey + 1
-    if (key.size() != CPubKey::SIZE + 1 && key.size() != CPubKey::COMPRESSED_SIZE + 1) {
+    if (key.size() != CPubKey::ECDSA_SIZE + 1 && key.size() != CPubKey::ECDSA_COMPRESSED_SIZE + 1) {
         throw std::ios_base::failure("Size of key was not the expected size for the type BIP32 keypath");
     }
     // Read in the pubkey from key

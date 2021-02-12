@@ -89,7 +89,7 @@ int ec_seckey_import_der(const secp256k1_context* ctx, unsigned char *out32, con
  * key32 must point to a 32-byte raw private key.
  */
 int ec_seckey_export_der(const secp256k1_context *ctx, unsigned char *seckey, size_t *seckeylen, const unsigned char *key32, bool compressed) {
-    assert(*seckeylen >= CKey::SIZE);
+    assert(*seckeylen >= CKey::ECDSA_SIZE);
     secp256k1_pubkey pubkey;
     size_t pubkeylen = 0;
     if (!secp256k1_ec_pubkey_create(ctx, &pubkey, key32)) {
@@ -115,11 +115,11 @@ int ec_seckey_export_der(const secp256k1_context *ctx, unsigned char *seckey, si
         memcpy(ptr, begin, sizeof(begin)); ptr += sizeof(begin);
         memcpy(ptr, key32, 32); ptr += 32;
         memcpy(ptr, middle, sizeof(middle)); ptr += sizeof(middle);
-        pubkeylen = CPubKey::COMPRESSED_SIZE;
+        pubkeylen = CPubKey::ECDSA_COMPRESSED_SIZE;
         secp256k1_ec_pubkey_serialize(ctx, ptr, &pubkeylen, &pubkey, SECP256K1_EC_COMPRESSED);
         ptr += pubkeylen;
         *seckeylen = ptr - seckey;
-        assert(*seckeylen == CKey::COMPRESSED_SIZE);
+        assert(*seckeylen == CKey::ECDSA_COMPRESSED_SIZE);
     } else {
         static const unsigned char begin[] = {
             0x30,0x82,0x01,0x13,0x02,0x01,0x01,0x04,0x20
@@ -141,11 +141,11 @@ int ec_seckey_export_der(const secp256k1_context *ctx, unsigned char *seckey, si
         memcpy(ptr, begin, sizeof(begin)); ptr += sizeof(begin);
         memcpy(ptr, key32, 32); ptr += 32;
         memcpy(ptr, middle, sizeof(middle)); ptr += sizeof(middle);
-        pubkeylen = CPubKey::SIZE;
+        pubkeylen = CPubKey::ECDSA_SIZE;
         secp256k1_ec_pubkey_serialize(ctx, ptr, &pubkeylen, &pubkey, SECP256K1_EC_UNCOMPRESSED);
         ptr += pubkeylen;
         *seckeylen = ptr - seckey;
-        assert(*seckeylen == CKey::SIZE);
+        assert(*seckeylen == CKey::ECDSA_SIZE);
     }
     return 1;
 }
@@ -177,8 +177,8 @@ CPrivKey CKey::GetPrivKey() const {
     CPrivKey seckey;
     int ret;
     size_t seckeylen;
-    seckey.resize(SIZE);
-    seckeylen = SIZE;
+    seckey.resize(ECDSA_SIZE);
+    seckeylen = ECDSA_SIZE;
     ret = ec_seckey_export_der(secp256k1_context_sign, seckey.data(), &seckeylen, begin(), fCompressed);
     assert(ret);
     seckey.resize(seckeylen);
@@ -190,7 +190,7 @@ CPubKey CKey::GetPubKey() const {
     std::string qpubkey = sigman.get_public_key();
     
     secp256k1_pubkey pubkey;
-    size_t clen = CPubKey::SIZE;
+    size_t clen = CPubKey::ECDSA_SIZE;
     CPubKey result;
     int ret = secp256k1_ec_pubkey_create(secp256k1_context_sign, &pubkey, begin());
     assert(ret);
@@ -219,8 +219,8 @@ bool CKey::Sign(const uint256 &hash, std::vector<unsigned char>& vchSig, bool gr
     
     //std::string qsignature = sigman.sign('test');
 
-    vchSig.resize(CPubKey::SIGNATURE_SIZE);
-    size_t nSigLen = CPubKey::SIGNATURE_SIZE;
+    vchSig.resize(CPubKey::ECDSA_SIGNATURE_SIZE);
+    size_t nSigLen = CPubKey::ECDSA_SIGNATURE_SIZE;
     unsigned char extra_entropy[32] = {0};
     WriteLE32(extra_entropy, test_case);
     secp256k1_ecdsa_signature sig;
@@ -255,7 +255,7 @@ bool CKey::VerifyPubKey(const CPubKey& pubkey) const {
 bool CKey::SignCompact(const uint256 &hash, std::vector<unsigned char>& vchSig) const {
     if (!fValid)
         return false;
-    vchSig.resize(CPubKey::COMPACT_SIGNATURE_SIZE);
+    vchSig.resize(CPubKey::ECDSA_COMPACT_SIGNATURE_SIZE);
     int rec = -1;
     secp256k1_ecdsa_recoverable_signature sig;
     int ret = secp256k1_ecdsa_sign_recoverable(secp256k1_context_sign, &sig, hash.begin(), begin(), secp256k1_nonce_function_rfc6979, nullptr);
@@ -285,7 +285,7 @@ bool CKey::Derive(CKey& keyChild, ChainCode &ccChild, unsigned int nChild, const
     std::vector<unsigned char, secure_allocator<unsigned char>> vout(64);
     if ((nChild >> 31) == 0) {
         CPubKey pubkey = GetPubKey();
-        assert(pubkey.size() == CPubKey::COMPRESSED_SIZE);
+        assert(pubkey.size() == CPubKey::ECDSA_COMPRESSED_SIZE);
         BIP32Hash(cc, nChild, *pubkey.begin(), pubkey.begin()+1, vout.data());
     } else {
         assert(size() == 32);

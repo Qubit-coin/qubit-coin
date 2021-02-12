@@ -36,7 +36,7 @@ FUZZ_TARGET_INIT(key_io, initialize_key_io)
     }
 
     const CExtPubKey ext_pub_key = DecodeExtPubKey(random_string);
-    if (ext_pub_key.pubkey.size() == CPubKey::COMPRESSED_SIZE) {
+    if (ext_pub_key.pubkey.size() == CPubKey::ECDSA_COMPRESSED_SIZE) {
         assert(ext_pub_key == DecodeExtPubKey(EncodeExtPubKey(ext_pub_key)));
     }
 

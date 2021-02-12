@@ -31,14 +31,14 @@ public:
     /**
      * secp256k1:
      */
-    static const unsigned int SIZE            = 279;
-    static const unsigned int COMPRESSED_SIZE = 214;
+    static const unsigned int ECDSA_SIZE            = 279;
+    static const unsigned int ECDSA_COMPRESSED_SIZE = 214;
     /**
      * see www.keylength.com
      * script supports up to 75 for single byte push
      */
     static_assert(
-        SIZE >= COMPRESSED_SIZE,
+        ECDSA_SIZE >= ECDSA_COMPRESSED_SIZE,
         "COMPRESSED_SIZE is larger than SIZE");
 
 private:

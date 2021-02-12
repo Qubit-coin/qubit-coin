@@ -243,9 +243,9 @@ static CPubKey UnserializePubkey(const std::vector<uint8_t>& data)
 static unsigned int GetLen(unsigned char chHeader)
 {
     if (chHeader == 2 || chHeader == 3)
-        return CPubKey::COMPRESSED_SIZE;
+        return CPubKey::ECDSA_COMPRESSED_SIZE;
     if (chHeader == 4 || chHeader == 6 || chHeader == 7)
-        return CPubKey::SIZE;
+        return CPubKey::ECDSA_SIZE;
     return 0;
 }
 

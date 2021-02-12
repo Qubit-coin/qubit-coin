@@ -2512,7 +2512,7 @@ static RPCHelpMan quantumtest()
     result.pushKV("Sign 'Hello World' signature", signature);
     result.pushKV("Verify 'Hello World'", sigman.verify("Hello World", signature) ? "SUCCESS" : "FAILED");
     result.pushKV("Algorithm", sigman.algorithm);
-    result.pushKV("Version", "1.3");
+    result.pushKV("Version", "1.3refactor");
     return result;
 },
     };

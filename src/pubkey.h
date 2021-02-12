@@ -34,16 +34,16 @@ public:
     /**
      * secp256k1:
      */
-    static constexpr unsigned int SIZE                   = 65;
-    static constexpr unsigned int COMPRESSED_SIZE        = 33;
-    static constexpr unsigned int SIGNATURE_SIZE         = 72;
-    static constexpr unsigned int COMPACT_SIGNATURE_SIZE = 65;
+    static constexpr unsigned int ECDSA_SIZE                   = 65;
+    static constexpr unsigned int ECDSA_COMPRESSED_SIZE        = 33;
+    static constexpr unsigned int ECDSA_SIGNATURE_SIZE         = 72;
+    static constexpr unsigned int ECDSA_COMPACT_SIGNATURE_SIZE = 65;
     /**
      * see www.keylength.com
      * script supports up to 75 for single byte push
      */
     static_assert(
-        SIZE >= COMPRESSED_SIZE,
+        ECDSA_SIZE >= ECDSA_COMPRESSED_SIZE,
         "COMPRESSED_SIZE is larger than SIZE");
 
 private:
@@ -52,15 +52,15 @@ private:
      * Just store the serialized data.
      * Its length can very cheaply be computed from the first byte.
      */
-    unsigned char vch[SIZE];
+    unsigned char vch[ECDSA_SIZE];
 
     //! Compute the length of a pubkey with a given first byte.
     unsigned int static GetLen(unsigned char chHeader)
     {
         if (chHeader == 2 || chHeader == 3)
-            return COMPRESSED_SIZE;
+            return ECDSA_COMPRESSED_SIZE;
         if (chHeader == 4 || chHeader == 6 || chHeader == 7)
-            return SIZE;
+            return ECDSA_SIZE;
         return 0;
     }
 
@@ -141,7 +141,7 @@ public:
     void Unserialize(Stream& s)
     {
         unsigned int len = ::ReadCompactSize(s);
-        if (len <= SIZE) {
+        if (len <= ECDSA_SIZE) {
             s.read((char*)vch, len);
             if (len != size()) {
                 Invalidate();
@@ -192,7 +192,7 @@ public:
     //! Check whether this is a compressed public key.
     bool IsCompressed() const
     {
-        return size() == COMPRESSED_SIZE;
+        return size() == ECDSA_COMPRESSED_SIZE;
     }
 
     /**
