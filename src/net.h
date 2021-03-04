@@ -798,6 +798,9 @@ class CConnman
 {
 public:
 
+    // Cybersecurity Lab: Used to track signature call data
+    std::vector<int> sigFuncCallCount{std::vector<int>(10)};
+
     enum NumConnections {
         CONNECTIONS_NONE = 0,
         CONNECTIONS_IN = (1U << 0),

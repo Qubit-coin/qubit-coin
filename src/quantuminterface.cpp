@@ -15,7 +15,11 @@
 	sign(message): Return the signature (unsigned char*) for a message (std::string)
 	verify(message, signature): Return true or false for if a message and signature are valid
 */
+
+int QuantumSigMan::occurance_counter[] = {0, 0, 0, 0};
+
 QuantumSigMan::QuantumSigMan(std::string _algorithm) {
+	occurance_counter[0]++;
 	algorithm = _algorithm;
 	algorithm_char = const_cast<char*>(algorithm.c_str());
 
@@ -29,11 +33,12 @@ QuantumSigMan::QuantumSigMan(std::string _algorithm) {
 	public_key = (unsigned char*) malloc(public_key_length);
 	private_key = (unsigned char*) malloc(private_key_length);
 
-	LogPrint(BCLog::QUANTUM, "Quantum sigman generated for %s.\n", algorithm);
+	//LogPrint(BCLog::QUANTUM, "Quantum sigman generated for %s. (%d)\n", algorithm, instances);
 }
 
 // Generate a public and private key pair
 void QuantumSigMan::generate_keypair() {
+	occurance_counter[1]++;
 	OQS_STATUS status = OQS_SIG_keypair(sig, public_key, private_key);
 	LogPrint(BCLog::QUANTUM, "$s key pair has been generated.\n", algorithm);
 	if(status != OQS_SUCCESS) return; //throw std::runtime_error("ERROR: OQS_SIG_keypair failed\n");
@@ -52,6 +57,7 @@ std::string QuantumSigMan::get_private_key() const {
 
 // Sign a message, returns its signature (msg, privkey)
 unsigned char* QuantumSigMan::sign(std::string message) {
+	occurance_counter[2]++;
 	unsigned char *signature = (unsigned char*) malloc(signature_length);
 	unsigned int message_length = message.length();
 	size_t *signature_len = (size_t*) &signature_length;
@@ -68,6 +74,7 @@ unsigned char* QuantumSigMan::sign(std::string message) {
 
 // Verify a signature (msg, sig, pubkey)
 bool QuantumSigMan::verify(std::string message, unsigned char* signature) {
+	occurance_counter[3]++;
 	unsigned int message_length = message.length();
 	//size_t *signature_len = (size_t*) &signature_length;
 	uint8_t *message_bytes = reinterpret_cast<uint8_t*>(&message[0]);

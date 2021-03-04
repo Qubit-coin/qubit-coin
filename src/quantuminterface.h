@@ -1,3 +1,4 @@
+// Cybersecurity lab
 #ifndef BITCOIN_QUANTUMINTERFACE_H
 #define BITCOIN_QUANTUMINTERFACE_H
 
@@ -25,6 +26,13 @@ private:
 	OQS_SIG *sig;
 
 public:
+	// Counts the number of instances
+	// occurance_counter[0]: Allocation
+	// occurance_counter[1]: Key Generation
+	// occurance_counter[2]: Signing
+	// occurance_counter[3]: Verifying
+	static int occurance_counter[4];
+
 	std::string algorithm;
 	unsigned int public_key_length, private_key_length, signature_length;
 	unsigned char *public_key, *private_key;

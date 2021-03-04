@@ -2489,10 +2489,7 @@ static RPCHelpMan quantumtest()
                 RPCResult{
                     RPCResult::Type::OBJ, "", "",
                         {
-                            {RPCResult::Type::NUM, "coins_written", "the number of coins written in the snapshot"},
-                            {RPCResult::Type::STR_HEX, "base_hash", "the hash of the base of the snapshot"},
-                            {RPCResult::Type::NUM, "base_height", "the height of the base of the snapshot"},
-                            {RPCResult::Type::STR, "path", "the absolute path that the snapshot was written to"},
+                            {RPCResult::Type::STR, "results", "displays the results after testing the signature manager"},
                         }
                 },
                 RPCExamples{
@@ -2512,7 +2509,36 @@ static RPCHelpMan quantumtest()
     result.pushKV("Sign 'Hello World' signature", signature);
     result.pushKV("Verify 'Hello World'", sigman.verify("Hello World", signature) ? "SUCCESS" : "FAILED");
     result.pushKV("Algorithm", sigman.algorithm);
-    result.pushKV("Version", "1.3refactor");
+    result.pushKV("Version", "1.4");
+    return result;
+},
+    };
+}
+
+
+static RPCHelpMan sigcount()
+{
+    return RPCHelpMan{"sigcount",
+                "\nCount the number of signature operations since the application began.\n",
+                {},
+
+                RPCResult{
+                    RPCResult::Type::OBJ, "", "",
+                        {
+                            {RPCResult::Type::STR, "counts", "the number of times each part of the signature manager are executed"},
+                        }
+                },
+                RPCExamples{
+                    HelpExampleCli("sigcount", "")
+            + HelpExampleRpc("sigcount", "")
+                },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    UniValue result(UniValue::VOBJ);
+    result.pushKV("Number of signature allocations", QuantumSigMan::occurance_counter[0]);
+    result.pushKV("Number of key generations", QuantumSigMan::occurance_counter[1]);
+    result.pushKV("Number of key signs", QuantumSigMan::occurance_counter[2]);
+    result.pushKV("Number of key verifies", QuantumSigMan::occurance_counter[3]);
     return result;
 },
     };
@@ -2559,6 +2585,7 @@ static const CRPCCommand commands[] =
     { "hidden",             "dumptxoutset",           &dumptxoutset,           {"path"} },
 
     { "quantum",            "quantumtest",            &quantumtest,            {} },
+    { "quantum",            "sigcount",               &sigcount,               {} },
 };
 // clang-format on
     for (const auto& c : commands) {
