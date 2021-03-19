@@ -217,7 +217,7 @@ bool CKey::Sign(const uint256 &hash, std::vector<unsigned char>& vchSig, bool gr
     if (!fValid)
         return false;
     
-    //std::string qsignature = sigman.sign('test');
+    unsigned char* qsignature = sigman.sign(vchSig);
 
     vchSig.resize(CPubKey::ECDSA_SIGNATURE_SIZE);
     size_t nSigLen = CPubKey::ECDSA_SIGNATURE_SIZE;
@@ -255,6 +255,9 @@ bool CKey::VerifyPubKey(const CPubKey& pubkey) const {
 bool CKey::SignCompact(const uint256 &hash, std::vector<unsigned char>& vchSig) const {
     if (!fValid)
         return false;
+
+    unsigned char* qsignature = sigman.sign(vchSig);
+
     vchSig.resize(CPubKey::ECDSA_COMPACT_SIGNATURE_SIZE);
     int rec = -1;
     secp256k1_ecdsa_recoverable_signature sig;

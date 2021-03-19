@@ -49,10 +49,12 @@ public:
 	std::string get_private_key() const;
 
 	// Sign a message, returns its signature
-	unsigned char* sign(std::string message);
+	unsigned char* sign(unsigned char* message, unsigned int message_length) const;
+	unsigned char* sign(std::string message) const;
+	unsigned char* sign(std::vector<unsigned char> message) const;
 
 	// Verify a signature
-	bool verify(std::string message, unsigned char* signature);
+	bool verify(std::string message, unsigned char* signature) const;
 
 	// Given an array of bytes, convert it to a hexadecimal string
 	static std::string bytes_to_hex(unsigned char* bytes, int len) {

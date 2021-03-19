@@ -55,6 +55,8 @@ static const int EXTRA_BLOCK_RELAY_ONLY_PEER_INTERVAL = 300;
 static constexpr size_t MAX_ADDR_TO_SEND = 1000;
 
 /** Maximum length of incoming protocol messages (no message over 4 MB is currently acceptable). */
+
+// Cybersecurity lab: 3/04/21
 // Post-quantum: make max size 32mb
 static const unsigned int MAX_PROTOCOL_MESSAGE_LENGTH = 32 * 1000 * 1000;
 /** Maximum length of the user agent string in `version` message */

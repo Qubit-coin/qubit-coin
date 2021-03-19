@@ -16,6 +16,7 @@
 	verify(message, signature): Return true or false for if a message and signature are valid
 */
 
+// Count the number of occurances of each portion of the signature manager
 int QuantumSigMan::occurance_counter[] = {0, 0, 0, 0};
 
 QuantumSigMan::QuantumSigMan(std::string _algorithm) {
@@ -56,16 +57,84 @@ std::string QuantumSigMan::get_private_key() const {
 }
 
 // Sign a message, returns its signature (msg, privkey)
-unsigned char* QuantumSigMan::sign(std::string message) {
-	occurance_counter[2]++;
+unsigned char* QuantumSigMan::sign(std::string message) const {
+	//LogPrint(BCLog::QUANTUM, "\nSIGN (STRING) CALLED   %d   \n", message.size());
+	//unsigned char *signature = (unsigned char*) malloc(signature_length);
+	//return signature;
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+	unsigned int message_length = message.size();
+	unsigned char *message_uc = (unsigned char*) malloc(message_length);
+
+    std::copy(message.begin(), message.end(), message_uc);
+
+	//unsigned char *signature = (unsigned char*) malloc(signature_length);
+	//return signature;
+
+	return sign(message_uc, message_length);
+	//unsigned char *signature = (unsigned char*) malloc(signature_length);
+	//return signature;
+}
+
+unsigned char* QuantumSigMan::sign(std::vector<unsigned char> message) const {
+	/*occurance_counter[2]++;
 	unsigned char *signature = (unsigned char*) malloc(signature_length);
-	unsigned int message_length = message.length();
 	size_t *signature_len = (size_t*) &signature_length;
-	uint8_t *message_bytes = reinterpret_cast<uint8_t*>(&message[0]);
+
+	unsigned char *message_uc;
+    std::copy(message.begin(), message.end(), message_uc);
+
+	uint8_t *message_bytes = reinterpret_cast<uint8_t*>(&message_uc[0]);
+	unsigned int message_length = message.size();
 
 	OQS_STATUS status = OQS_SIG_sign(sig, signature, signature_len, message_bytes, message_length, private_key);
 
-	LogPrint(BCLog::QUANTUM, "%s message \"%s\" was signed.\n", algorithm, message);
+	LogPrint(BCLog::QUANTUM, "%s message \"%s\" was signed.\n", algorithm, message_uc);
+
+	if (status != OQS_SUCCESS) return 0; //throw std::runtime_error("ERROR: OQS_SIG_sign failed\n");
+
+	return signature;*/
+
+	unsigned char *message_uc;
+
+    std::copy(message.begin(), message.end(), message_uc);
+	unsigned int message_length = message.size();
+
+	return sign(message_uc, message_length);
+}
+
+unsigned char* QuantumSigMan::sign(unsigned char* message_uc, unsigned int message_length) const {
+	
+
+	/*occurance_counter[2]++;
+	unsigned char *signature = (unsigned char*) malloc(signature_length);
+	size_t *signature_len = (size_t*) &signature_length;
+
+	unsigned char *message_uc;
+    std::copy(message.begin(), message.end(), message_uc);
+
+	uint8_t *message_bytes = reinterpret_cast<uint8_t*>(&message_uc[0]);
+	unsigned int message_length = message.size();
+
+	OQS_STATUS status = OQS_SIG_sign(sig, signature, signature_len, message_bytes, message_length, private_key);
+
+	LogPrint(BCLog::QUANTUM, "%s message \"%s\" was signed.\n", algorithm, message_uc);
+
+	if (status != OQS_SUCCESS) return 0; //throw std::runtime_error("ERROR: OQS_SIG_sign failed\n");
+
+	return signature;*/
+
+	occurance_counter[2]++;
+	unsigned char *signature = (unsigned char*) malloc(signature_length);
+	size_t *signature_len = (size_t*) &signature_length;
+
+	//unsigned char *message_uc;
+    //std::copy(message.begin(), message.end(), message_uc);
+
+	uint8_t *message_bytes = reinterpret_cast<uint8_t*>(&message_uc[0]);
+	OQS_STATUS status = OQS_SIG_sign(sig, signature, signature_len, message_bytes, message_length, private_key);
+
+	LogPrint(BCLog::QUANTUM, "%s message \"%s\" was signed.\n", algorithm, message_uc);
 
 	if (status != OQS_SUCCESS) return 0; //throw std::runtime_error("ERROR: OQS_SIG_sign failed\n");
 
@@ -73,7 +142,7 @@ unsigned char* QuantumSigMan::sign(std::string message) {
 }
 
 // Verify a signature (msg, sig, pubkey)
-bool QuantumSigMan::verify(std::string message, unsigned char* signature) {
+bool QuantumSigMan::verify(std::string message, unsigned char* signature) const {
 	occurance_counter[3]++;
 	unsigned int message_length = message.length();
 	//size_t *signature_len = (size_t*) &signature_length;
